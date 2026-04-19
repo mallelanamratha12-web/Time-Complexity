@@ -1,0 +1,131 @@
+try:
+    import matplotlib.pyplot as plt
+except:
+    import os
+    os.system("pip install matplotlib")
+    import matplotlib.pyplot as plt
+
+import time
+import random
+
+
+
+def bubble_sort(arr):
+    a = arr.copy()
+    n = len(a)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if a[j] > a[j + 1]:
+                a[j], a[j + 1] = a[j + 1], a[j]
+    return a
+
+
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+
+    return merge(left, right)
+
+
+def merge(left, right):
+    result = []
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+
+def compare_sorting(arr):
+    print("\n🔹 Sorting Comparison")
+
+    start = time.time()
+    bubble_sort(arr)
+    bubble_time = time.time() - start
+
+    start = time.time()
+    merge_sort(arr)
+    merge_time = time.time() - start
+
+    print(f"Bubble Sort Time: {bubble_time:.6f} sec  → O(n^2)")
+    print(f"Merge Sort Time:  {merge_time:.6f} sec  → O(n log n)")
+
+    return bubble_time, merge_time
+
+
+def compare_membership(arr, target):
+    print("\n🔹 Membership Comparison")
+
+    start = time.time()
+    target in arr
+    list_time = time.time() - start
+
+    s = set(arr)
+    start = time.time()
+    target in s
+    set_time = time.time() - start
+
+    print(f"List Time: {list_time:.6f} sec  → O(n)")
+    print(f"Set Time:  {set_time:.6f} sec  → O(1)")
+
+    return list_time, set_time
+
+
+
+def plot_results(bubble, merge, list_t, set_t):
+    labels = ['Bubble Sort', 'Merge Sort', 'List Check', 'Set Check']
+    times = [bubble, merge, list_t, set_t]
+
+    plt.figure()
+    plt.bar(labels, times)
+    plt.title("Algorithm Time Comparison")
+    plt.xlabel("Algorithms")
+    plt.ylabel("Time (seconds)")
+    plt.xticks(rotation=20)
+    plt.show()
+
+
+
+print("📊 Algo Comparison Project")
+print("1. Manual Input")
+print("2. Auto Large Test")
+
+choice = input("Enter choice (1 or 2): ")
+
+if choice == "1":
+    try:
+        user_input = input("Enter numbers (comma separated): ")
+        arr = list(map(int, user_input.split(",")))
+
+        b_time, m_time = compare_sorting(arr)
+        l_time, s_time = compare_membership(arr, arr[0])
+
+        plot_results(b_time, m_time, l_time, s_time)
+
+    except:
+        print("❌ Invalid input. Example: 5,3,8,2,1")
+
+elif choice == "2":
+    print("\n🔹 Running Large Data Test (1000 elements)...")
+
+    arr = [random.randint(1, 10000) for _ in range(1000)]
+
+    b_time, m_time = compare_sorting(arr)
+    l_time, s_time = compare_membership(arr, arr[0])
+
+    plot_results(b_time, m_time, l_time, s_time)
+
+else:
+    print("❌ Invalid choice")
